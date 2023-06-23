@@ -11,7 +11,7 @@ def get_volume():
   return executor.run('amixer -D pulse get Master | grep -o "\[.*%\]" | grep -o "[0-9]*" | head -n1')[0]
 
 def set_volume(percentage):
-  executor.run('pactl set-sink-volume ' + get_active_sink() + ' ' + str(percentage) + '%')
+  executor.run(f'pactl set-sink-volume {get_active_sink()} {str(percentage)}%')
   emit_signal()
 
 def toggle_volume():
@@ -34,10 +34,7 @@ def trim_to_range(volume):
   return volume
 
 def status():
-  if int(get_volume()) == 0 or is_muted():
-    return 'muted'
-  else:
-    return 'on'
+  return 'muted' if int(get_volume()) == 0 or is_muted() else 'on'
 
 def emit_signal():
   executor.run('pkill -RTMIN+1 i3blocks')
@@ -60,11 +57,11 @@ if __name__ == '__main__':
   elif command == 'status':
     write(status())
   elif command == 'i3blocks':
-    output = get_volume() + ' '
+    output = f'{get_volume()} '
     if is_muted():
       output += '\n\n#cc241d'
     write(output)
   elif command == 'signal':
     emit_signal()
   else:
-    write('Usage: ' + sys.argv[0] + ' [set|up|down|toggle|read|status] [value]\n')
+    write(f'Usage: {sys.argv[0]}' + ' [set|up|down|toggle|read|status] [value]\n')

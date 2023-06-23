@@ -15,24 +15,22 @@ def run_script(command):
 
 def i3_msg(type):
   ''' Executes i3-msg -t <type> and returns the parsed JSON output.  '''
-  return json.loads(run('i3-msg -t ' + type)[0])
+  return json.loads(run(f'i3-msg -t {type}')[0])
 
 def get_workspace():
   ''' Returns the node of the currently focused workspace. '''
   workspaces = i3_msg('get_workspaces')
   tree = i3_msg('get_tree')
 
-  focused_num = None
-  for workspace in workspaces:
-    if workspace['focused']:
-      focused_num = workspace['num']
-      break
-
-  for node in tree['nodes'][1]['nodes'][1]['nodes']:
-    if node['num'] == focused_num:
-      return node
-
-  return None
+  focused_num = next(
+      (workspace['num'] for workspace in workspaces if workspace['focused']),
+      None,
+  )
+  return next(
+      (node for node in tree['nodes'][1]['nodes'][1]['nodes']
+       if node['num'] == focused_num),
+      None,
+  )
 
 # TODO remove a flag which one is the active window
 def get_window_titles():

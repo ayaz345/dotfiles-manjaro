@@ -2,10 +2,8 @@
 import math
 
 def html_hex(color):
-  hex_value = str(hex(int(color)))[2:]
-  if len(hex_value) == 1:
-    return '0' + hex_value
-  return hex_value
+  hex_value = hex(int(color))[2:]
+  return f'0{hex_value}' if len(hex_value) == 1 else hex_value
 
 def decode_color(color):
   return {
